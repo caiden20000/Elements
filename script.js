@@ -2,6 +2,8 @@ var gameArea = document.getElementById("gamearea");
 
 var elementList = [];
 
+var CUSTOMS = true;
+
 class ElementBox {
     constructor(name, color, textColor, isBase = false) {
         this.name = name;
@@ -183,6 +185,7 @@ function getElementFromPossible(name) {
             return new ElementBox(el[0], el[1], el[2]);
         }
     }
+    if (CUSTOMS) createCustomElement(name);
     return null;
 }
 
@@ -191,6 +194,7 @@ function getCombinationResult(name1, name2) {
     for (let combo of combinations) {
         if (combo.test(name1, name2)) return combo.result();
     }
+    if (CUSTOMS) createCustomCombination(name1, name2);
     return null;
 }
 
@@ -217,6 +221,43 @@ function populateLists() {
         console.log("Loaded!");
     })
 }
+
+function createCustomCombination(name1, name2) {
+    let dialog = document.getElementById("comboDialog");
+    let comboTitle = document.getElementById("comboTitle");
+    comboTitle.innerHTML = `${name1} + ${name2}`;
+    customCombo1 = name1;
+    customCombo2 = name2;
+    dialog.showModal();
+}
+
+var customElement;
+var customCombo1, customCombo2;
+
+function createCustomElement(name) {
+    let dialog = document.getElementById("elementDialog");
+    let title = document.getElementById("elementTitle");
+    title.innerHTML = `Creating "${name}":`;
+    customElement = name;
+    dialog.showModal();
+}
+
+document.getElementById("submitCombo").addEventListener("click", e => {
+    let result = document.getElementById("resultName");
+    let elementName = result.value;
+    result.value = "";
+    combinations.push(new Combination(customCombo1, customCombo2, elementName));
+    let el = getElementFromPossible(elementName);
+    if (el) el.remove();
+})
+
+document.getElementById("submitElement").addEventListener("click", e => {
+    let boxColor = document.getElementById("boxColor");
+    let textColor = document.getElementById("textColor");
+    possibleElements.push([customElement, boxColor.value, textColor.value]);
+    boxColor.value = "#999999";
+    textColor.value = "#000000";
+})
 
 var possibleElements = [];
 var combinations = [];
