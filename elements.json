@@ -49,6 +49,101 @@
           "Glass",
           "#ffffff",
           "#11245b"
+        ],
+        [
+          "Continent",
+          "#8fc404",
+          "#fcd081"
+        ],
+        [
+          "The Earth",
+          "#49724b",
+          "#c8ebff"
+        ],
+        [
+          "The Sun",
+          "#ffdb33",
+          "#000000"
+        ],
+        [
+          "Solar System",
+          "#000000",
+          "#f4ffb5"
+        ],
+        [
+          "Planet",
+          "#999999",
+          "#000000"
+        ],
+        [
+          "The Moon",
+          "#cacaca",
+          "#000000"
+        ],
+        [
+          "Supernova",
+          "#bc1fa9",
+          "#22fc10"
+        ],
+        [
+          "Wind",
+          "#b3f7f4",
+          "#4c4c4c"
+        ],
+        [
+          "Opposite",
+          "#da5858",
+          "#9e99fb"
+        ],
+        [
+          "Water",
+          "#4444ff",
+          "#000000"
+        ],
+        [
+          "Air",
+          "#aabbff",
+          "#000000"
+        ],
+        [
+          "Earth",
+          "#883322",
+          "#ffffff"
+        ],
+        [
+          "Fire",
+          "#ff5544",
+          "#000000"
+        ],
+        [
+          "Heat",
+          "#f88c76",
+          "#9c0303"
+        ],
+        [
+          "Cold",
+          "#52cee0",
+          "#e8fdff"
+        ],
+        [
+          "Ice",
+          "#4fd5e3",
+          "#000000"
+        ],
+        [
+          "Space",
+          "#000000",
+          "#fffffb"
+        ],
+        [
+          "Matter",
+          "#ff33cc",
+          "#c1d2ff"
+        ],
+        [
+          "Steam",
+          "#f2feff",
+          "#000000"
         ]
       ],
     "combinations": [
@@ -106,6 +201,156 @@
           "Lightning",
           "Sand",
           "Glass"
+        ],
+        [
+          "Water",
+          "Lava",
+          "Island"
+        ],
+        [
+          "Land",
+          "Land",
+          "Continent"
+        ],
+        [
+          "Continent",
+          "Continent",
+          "The Earth"
+        ],
+        [
+          "Fire",
+          "The Earth",
+          "The Sun"
+        ],
+        [
+          "The Earth",
+          "The Sun",
+          "Solar System"
+        ],
+        [
+          "Solar System",
+          "Earth",
+          "Planet"
+        ],
+        [
+          "Solar System",
+          "Fire",
+          "The Sun"
+        ],
+        [
+          "The Earth",
+          "Planet",
+          "The Moon"
+        ],
+        [
+          "Water",
+          "The Sun",
+          "Cloud"
+        ],
+        [
+          "The Sun",
+          "Energy",
+          "Supernova"
+        ],
+        [
+          "Energy",
+          "Air",
+          "Wind"
+        ],
+        [
+          "Water",
+          "Fire",
+          "Opposite"
+        ],
+        [
+          "Opposite",
+          "Fire",
+          "Water"
+        ],
+        [
+          "Opposite",
+          "Earth",
+          "Air"
+        ],
+        [
+          "Opposite",
+          "Air",
+          "Earth"
+        ],
+        [
+          "Opposite",
+          "Water",
+          "Fire"
+        ],
+        [
+          "Opposite",
+          "Land",
+          "Ocean"
+        ],
+        [
+          "Opposite",
+          "Island",
+          "Ocean"
+        ],
+        [
+          "Opposite",
+          "Storm",
+          "The Sun"
+        ],
+        [
+          "Energy",
+          "Fire",
+          "Heat"
+        ],
+        [
+          "Opposite",
+          "Heat",
+          "Cold"
+        ],
+        [
+          "Cold",
+          "Heat",
+          "Opposite"
+        ],
+        [
+          "Opposite",
+          "Opposite",
+          "Opposite"
+        ],
+        [
+          "Water",
+          "Cold",
+          "Ice"
+        ],
+        [
+          "Solar System",
+          "Solar System",
+          "Space"
+        ],
+        [
+          "Opposite",
+          "Space",
+          "The Earth"
+        ],
+        [
+          "Opposite",
+          "Planet",
+          "Space"
+        ],
+        [
+          "Opposite",
+          "The Earth",
+          "Space"
+        ],
+        [
+          "Opposite",
+          "Energy",
+          "Matter"
+        ],
+        [
+          "Heat",
+          "Water",
+          "Steam"
         ]
       ]
 }
