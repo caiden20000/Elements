@@ -1,0 +1,12 @@
+{
+    "possibleElements": [
+        ["Cloud", "#DDD", "black"],
+        ["Lava", "#F44", "white"],
+        ["", "", ""]
+    ],
+    "combinations": [
+        ["air", "water", "cloud"],
+        ["earth", "fire", "lava"],
+        ["", "", ""]
+    ]
+}
