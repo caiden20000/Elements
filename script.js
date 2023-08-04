@@ -259,6 +259,15 @@ document.getElementById("submitElement").addEventListener("click", e => {
     textColor.value = "#000000";
 })
 
+// For retrieving customs from the command line
+function getComboArray() {
+    let newList = [];
+        for (let combo of combinations) {
+        newList.push([combo.e1, combo.e2, combo.resultName])
+    }
+    return newList;
+}
+
 var possibleElements = [];
 var combinations = [];
 populateLists();
