@@ -26,7 +26,7 @@ var customsData = {
     combo: {
         ingredients: [],
         results: []
-    } as ComboTemplate
+    } as Combination
 }
 
 var possibleBits: BitTemplate[] = [];
@@ -38,25 +38,10 @@ interface BitTemplate {
     textColor: string;
 }
 
-interface ComboTemplate {
+interface Combination {
     ingredients: string[];
     results: string[];
 }
-
-// var dragging = {
-//     mouseDown: false,
-//     bitElement: null,
-//     bit: null,
-//     clickX: 0,
-//     clickY: 0,
-//     elementX: 0,
-//     elementY: 0
-// };
-
-// var userIn.shiftDown = false;
-
-// var customElement;
-// var customCombo1, customCombo2;
 
 class Bit {
     name: string;
@@ -79,10 +64,8 @@ class Bit {
     }
 
     static fromName(bitName: string): Bit | null {
-        for (let template of possibleBits) {
-            if (template.name == bitName) return Bit.fromTemplate(template);
-        }
-        return null;
+        const template = possibleBits.find(template => template.name == bitName);
+        return template ? Bit.fromTemplate(template) : null;
     }
 
     setPosition(x: number, y: number) {
@@ -158,9 +141,7 @@ function getRectOverlap(rect1: DOMRect, rect2: DOMRect) {
     return overlapArea;
 }
 
-// elBox is released element.
-// Finds the elements elBox overlaps.
-// Gets the element most overlapped by elBox.
+
 function findOverlap(bit: Bit) {
     let rect1 = bit.getRect();
     let maxOverlap = 0;
@@ -174,6 +155,7 @@ function findOverlap(bit: Bit) {
             overlapBit = secondBit;
         }
     }
+    // TODO: Pass in an ordered list of overlapping elements or something to enable 3+ bit combos
     if (overlapBit != null) combineBits([bit, overlapBit]);
 }
 
@@ -205,6 +187,38 @@ function findMidpoint(rects: DOMRect[]) {
         top: avgTop,
         left: avgLeft
     };
+}
+
+// For spawning multiple bits not directly on top of each other
+function findPointsAbout(rects: DOMRect[], numberOfPoints: number): {top: number, left: number}[] {
+    if (rects.length == 0) return [];
+    if (numberOfPoints < 2) return [findMidpoint(rects)]
+    let topmost = null, bottommost = null;
+    let leftmost = null, rightmost = null;
+    let avgTop = 0, avgLeft = 0;
+    for (let rect of rects) {
+        if (topmost == null || rect.top < topmost) topmost == rect.top;
+        if (bottommost == null || rect.top > bottommost) bottommost == rect.top;
+        if (leftmost == null || rect.left < leftmost) leftmost == rect.left;
+        if (rightmost == null || rect.left > rightmost) rightmost == rect.left;
+        avgTop += rect.top;
+        avgLeft += rect.left;
+    }
+    avgTop /= rects.length;
+    avgLeft /= rects.length;
+    topmost ??= 0, bottommost ??= 0, leftmost ??= 0, rightmost ??= 0;
+    const verticalInterval = (bottommost - topmost) / (numberOfPoints - 1);
+    const horizontalInterval = (rightmost - leftmost) / (numberOfPoints - 1);
+
+    let results = [];
+    for (let i=0; i<numberOfPoints; i++) {
+        results.push({
+            top: topmost + verticalInterval * i,
+            left: leftmost + horizontalInterval * i
+        })
+    }
+
+    return results;
 }
 
 
@@ -241,83 +255,25 @@ document.addEventListener("mousemove", e => {
     }
 });
 
-// Removes first appearance of item in array
-// Returns true if deletion occurs
-function removeFirst(array: any[], item: any) {
-    let index = array.indexOf(item);
-    if (index != -1) {
-        array.splice(index, 1);
-        return true;
+function matchCombo(combo: Combination, bitNames: string[]): boolean {
+    if (bitNames.length != combo.ingredients.length) return false;
+    bitNames.sort();
+    combo.ingredients.sort();
+    for (let i=0; i<bitNames.length; i++) {
+        if (bitNames[i].toLowerCase() != combo.ingredients[i].toLowerCase()) return false;
     }
-    return false;
+    return true;
 }
 
-
-class Combination {
-    ingredients: string[];
-    results: string[];
-    constructor(ingredients: string[], results: string[]) {
-        this.ingredients = ingredients;
-        this.results = results;
-    }
-
-    static fromTemplate(template: ComboTemplate) {
-        return new Combination(template.ingredients, template.results);
-    }
-
-    // Returns true if all strings in 'names' are in this.ingredients
-    match(names: string[]) {
-        // TODO check if all elements in names are in ingredients
-        if (names.length != this.ingredients.length) return false;
-        names.sort();
-        this.ingredients.sort();
-        for (let i=0; i<names.length; i++) {
-            if (names[i].toLowerCase() != this.ingredients[i].toLowerCase()) return false;
-        }
-        return true;
-    }
-    
-    getResults(): Bit[] {
-        let bits: Bit[] = [];
-        for (let bitName of this.results) {
-            let bit = getBitFromPossible(bitName);
-            if (bit) bits.push(bit);
-        }
-        return bits;
-    }
-
-    asTemplate(): ComboTemplate {
-        return {
-            ingredients: this.ingredients,
-            results: this.results
-        }
-    }
-}
-
-function getBitFromPossible(bitName: string) {
-    for (let bit of possibleBits) {
-        if (bit.name.toLowerCase() == bitName.toLowerCase()) {
-            return new Bit(bit.name, bit.color, bit.textColor);
-        }
-    }
-    if (ENABLE_CUSTOMS) createCustomBit(bitName);
-    return null;
-}
-
-// Returns an ElementBox or null
 function getCombinationResult(bitNames: string[]): Bit[] {
-    for (let combo of combinations) {
-        if (combo.match(bitNames)) return combo.getResults();
-    }
+    const foundCombo = combinations.find(combo => matchCombo(combo, bitNames));
+    if (foundCombo) return foundCombo.results.map(bit => Bit.fromName(bit)).filter(bit => bit) as Bit[];
     if (ENABLE_CUSTOMS) createCustomCombination(bitNames);
     return [];
 }
 
 function doesBitExist(bitName: string) {
-    for (let template of possibleBits) {
-        if (template.name.toLowerCase() == bitName.toLowerCase()) return true;
-    }
-    return false;
+    return possibleBits.some(template => template.name.toLowerCase() == bitName.toLowerCase());
 }
 
 //////////////////////
@@ -341,9 +297,7 @@ function populateLists(filename: string = "bits.json") {
     getJSONFromFile(filename, (file: any) => {
         console.log("Recieved! Applying combinations...");
         possibleBits = file.bits;
-        for (let combo of file.combinations) {
-            combinations.push(Combination.fromTemplate(combo));
-        }
+        combinations = file.combinations;
         console.log("Loaded!");
     })
 }
@@ -375,7 +329,11 @@ function createCustomBit(name: string) {
     // Split multiple bit results with plus signs
     let bitNames = result.value.split("+");
     result.value = "";
-    combinations.push(new Combination(customsData.combo.ingredients, bitNames));
+    combinations.push({
+        ingredients: customsData.combo.ingredients,
+        results: bitNames
+    });
+    
     if (ENABLE_CUSTOMS) {
         // TODO: ASYNC EVERYTHING
         for (let bitName of bitNames) {
@@ -392,16 +350,11 @@ function createCustomBit(name: string) {
     textColor.value = "#000000";
 });
 
-// For retrieving customs from the command line
-function getComboArray() {
-    return combinations.map(combo => combo.asTemplate());
-}
-
 // Exact same format as should be in bits.json
 function getCurrentGameRules() {
     return {
         bits: possibleBits,
-        combinations: getComboArray()
+        combinations: combinations
     }
 }
 
