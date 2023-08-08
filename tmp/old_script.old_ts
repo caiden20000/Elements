@@ -1,3 +1,8 @@
+/* 
+Old script is for keeping the "customs" elements.
+New script is removing customs elements as that should be seperate.
+*/
+
 // Main HTML area used for the game
 var gameArea: HTMLDivElement = document.getElementById("gamearea") as HTMLDivElement;
 // List of bits that currently exist in gameArea
