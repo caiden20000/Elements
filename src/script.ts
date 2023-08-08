@@ -86,18 +86,28 @@ class Bit {
         area.appendChild(this.element);
 
         this.element.addEventListener("mousedown", e => {
-            let targetBit: Bit;
-            // Copy when is "base" or holding shift
-            if (this.isBase || userIn.shiftDown) targetBit = this.spawnCopy();
-            else targetBit = this;
-            userIn.bit.element = targetBit.element;
-            userIn.bit.bit = targetBit;
-            let rect = targetBit.getRect()
-            userIn.bit.x = rect.left;
-            userIn.bit.y = rect.top;
-            // Make element TOP on z
-            targetBit.putOnTop();
-        })
+            if (e.button == 0) {
+                // Left mouse button
+                let targetBit: Bit;
+                // Copy when is "base" or holding shift
+                if (this.isBase || userIn.shiftDown) targetBit = this.spawnCopy();
+                else targetBit = this;
+                userIn.bit.element = targetBit.element;
+                userIn.bit.bit = targetBit;
+                let rect = targetBit.getRect()
+                userIn.bit.x = rect.left;
+                userIn.bit.y = rect.top;
+                // Make element TOP on z
+                targetBit.putOnTop();
+            }
+            else if (e.button == 2) {
+                // Right mouse button
+                // Deletes the bit
+                if (this.isBase == false) {
+                    this.remove();
+                }
+            }
+        });
     }
 
     // removes from list and DOM
@@ -213,20 +223,26 @@ document.addEventListener("keyup", e => {
 });
 
 document.addEventListener("mousedown", e => {
-    userIn.mouse.down = true;
-    userIn.mouse.x = e.pageX;
-    userIn.mouse.y = e.pageY;
+    if (e.button == 0) {
+        // Left mouse button
+        userIn.mouse.down = true;
+        userIn.mouse.x = e.pageX;
+        userIn.mouse.y = e.pageY;
+    }
 });
 
 document.addEventListener("mouseup", e => {
     // TODO: Put dragged element on end of elementList
     // to mirror gameArea child order
-    if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
-    userIn.mouse.down = false;
-    userIn.bit.element = null;
-    userIn.bit.bit = null;
-    userIn.mouse.x = 0;
-    userIn.mouse.y = 0;
+    if (e.button == 0) {
+        // Left mouse button
+        if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
+        userIn.mouse.down = false;
+        userIn.bit.element = null;
+        userIn.bit.bit = null;
+        userIn.mouse.x = 0;
+        userIn.mouse.y = 0;
+    }
 });
 
 document.addEventListener("mousemove", e => {
@@ -236,6 +252,16 @@ document.addEventListener("mousemove", e => {
         userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy)
     }
 });
+
+// Disable context menu on right clicking.
+// I wanted to add this only for the bits
+// But the mouseevent is first and I don't want
+// to tie removing bits to the functioning of the context menu.
+// (i.e. i'm lazy)
+document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    e.stopPropagation();
+})
 
 function matchCombo(combo: Combination, bitNames: string[]): boolean {
     if (bitNames.length != combo.ingredients.length) return false;
@@ -305,14 +331,3 @@ function initBaseBits(baseBitNames: string[]) {
 // Driver code
 
 populateLists();
-
-// 4 base elements
-// const water = Bit.fromName("water");
-// const air = Bit.fromName("air");
-// const earth = Bit.fromName("earth");
-// const fire = Bit.fromName("fire");
-
-// if (water) water.setPosition(10, 10);
-// if (air) air.setPosition(100, 10);
-// if (earth) earth.setPosition(190, 10);
-// if (fire) fire.setPosition(280, 10);
