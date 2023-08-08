@@ -147,12 +147,12 @@ function combineBits(bits: Bit[]) {
     const results = getCombinationResult(bitNames);
     if (results.length != 0) {
         const rectList = bits.map(bit => bit.getRect())
-        const newPos = findMidpoint(rectList);
+        const newPos = getMidpoint(rectList);
         for (let bit of bits) {
             if (!bit.isBase) bit.remove();
         }
         // TODO: Space out multiple combo results
-        const points = findPointsAbout(rectList, results.length);
+        const points = getPointsAbout(rectList, results.length);
         for (let i = 0; i<results.length; i++) {
             results[i].setPosition(points[i].left, points[i].top);
         }
@@ -160,7 +160,7 @@ function combineBits(bits: Bit[]) {
     }
 }
 
-function findMidpoint(rects: DOMRect[]) {
+function getMidpoint(rects: DOMRect[]) {
     let avgTop = 0;
     let avgLeft = 0;
     for (let rect of rects) {
@@ -177,9 +177,9 @@ function findMidpoint(rects: DOMRect[]) {
 }
 
 // For spawning multiple bits not directly on top of each other
-function findPointsAbout(rects: DOMRect[], numberOfPoints: number): {top: number, left: number}[] {
+function getPointsAbout(rects: DOMRect[], numberOfPoints: number): {top: number, left: number}[] {
     if (rects.length == 0) return [];
-    if (numberOfPoints < 2) return [findMidpoint(rects)]
+    if (numberOfPoints < 2) return [getMidpoint(rects)]
     let topmost = null as number | null, bottommost = null as number | null;
     let leftmost = null as number | null, rightmost = null as number | null;
     for (let rect of rects) {
