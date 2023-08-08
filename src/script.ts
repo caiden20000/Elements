@@ -75,7 +75,7 @@ class Bit {
     }
 
     getRect(): DOMRect {
-        return this.getRect();
+        return this.element.getBoundingClientRect();
     }
 
     initElement(area: HTMLDivElement) {
