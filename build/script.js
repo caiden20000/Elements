@@ -61,19 +61,29 @@ class Bit {
         this.element.style.color = this.textColor;
         area.appendChild(this.element);
         this.element.addEventListener("mousedown", e => {
-            let targetBit;
-            // Copy when is "base" or holding shift
-            if (this.isBase || userIn.shiftDown)
-                targetBit = this.spawnCopy();
-            else
-                targetBit = this;
-            userIn.bit.element = targetBit.element;
-            userIn.bit.bit = targetBit;
-            let rect = targetBit.getRect();
-            userIn.bit.x = rect.left;
-            userIn.bit.y = rect.top;
-            // Make element TOP on z
-            targetBit.putOnTop();
+            if (e.button == 0) {
+                // Left mouse button
+                let targetBit;
+                // Copy when is "base" or holding shift
+                if (this.isBase || userIn.shiftDown)
+                    targetBit = this.spawnCopy();
+                else
+                    targetBit = this;
+                userIn.bit.element = targetBit.element;
+                userIn.bit.bit = targetBit;
+                let rect = targetBit.getRect();
+                userIn.bit.x = rect.left;
+                userIn.bit.y = rect.top;
+                // Make element TOP on z
+                targetBit.putOnTop();
+            }
+            else if (e.button == 2) {
+                // Right mouse button
+                // Deletes the bit
+                if (this.isBase == false) {
+                    this.remove();
+                }
+            }
         });
     }
     // removes from list and DOM
@@ -122,20 +132,20 @@ function combineBits(bits) {
     const results = getCombinationResult(bitNames);
     if (results.length != 0) {
         const rectList = bits.map(bit => bit.getRect());
-        const newPos = findMidpoint(rectList);
+        const newPos = getMidpoint(rectList);
         for (let bit of bits) {
             if (!bit.isBase)
                 bit.remove();
         }
         // TODO: Space out multiple combo results
-        const points = findPointsAbout(rectList, results.length);
+        const points = getPointsAbout(rectList, results.length);
         for (let i = 0; i < results.length; i++) {
             results[i].setPosition(points[i].left, points[i].top);
         }
         //for (let result of results) result.setPosition(newPos.left, newPos.top);
     }
 }
-function findMidpoint(rects) {
+function getMidpoint(rects) {
     let avgTop = 0;
     let avgLeft = 0;
     for (let rect of rects) {
@@ -150,14 +160,13 @@ function findMidpoint(rects) {
     };
 }
 // For spawning multiple bits not directly on top of each other
-function findPointsAbout(rects, numberOfPoints) {
+function getPointsAbout(rects, numberOfPoints) {
     if (rects.length == 0)
         return [];
     if (numberOfPoints < 2)
-        return [findMidpoint(rects)];
+        return [getMidpoint(rects)];
     let topmost = null, bottommost = null;
     let leftmost = null, rightmost = null;
-    let avgTop = 0, avgLeft = 0;
     for (let rect of rects) {
         if (topmost == null || rect.top < topmost)
             topmost = rect.top;
@@ -167,11 +176,7 @@ function findPointsAbout(rects, numberOfPoints) {
             leftmost = rect.left;
         if (rightmost == null || rect.left > rightmost)
             rightmost = rect.left;
-        avgTop += rect.top;
-        avgLeft += rect.left;
     }
-    avgTop /= rects.length;
-    avgLeft /= rects.length;
     topmost !== null && topmost !== void 0 ? topmost : (topmost = 0), bottommost !== null && bottommost !== void 0 ? bottommost : (bottommost = 0), leftmost !== null && leftmost !== void 0 ? leftmost : (leftmost = 0), rightmost !== null && rightmost !== void 0 ? rightmost : (rightmost = 0);
     const verticalInterval = (bottommost - topmost) / (numberOfPoints - 1);
     const horizontalInterval = (rightmost - leftmost) / (numberOfPoints - 1);
@@ -193,20 +198,26 @@ document.addEventListener("keyup", e => {
         userIn.shiftDown = false;
 });
 document.addEventListener("mousedown", e => {
-    userIn.mouse.down = true;
-    userIn.mouse.x = e.pageX;
-    userIn.mouse.y = e.pageY;
+    if (e.button == 0) {
+        // Left mouse button
+        userIn.mouse.down = true;
+        userIn.mouse.x = e.pageX;
+        userIn.mouse.y = e.pageY;
+    }
 });
 document.addEventListener("mouseup", e => {
     // TODO: Put dragged element on end of elementList
     // to mirror gameArea child order
-    if (userIn.bit.bit != null)
-        findOverlap(userIn.bit.bit);
-    userIn.mouse.down = false;
-    userIn.bit.element = null;
-    userIn.bit.bit = null;
-    userIn.mouse.x = 0;
-    userIn.mouse.y = 0;
+    if (e.button == 0) {
+        // Left mouse button
+        if (userIn.bit.bit != null)
+            findOverlap(userIn.bit.bit);
+        userIn.mouse.down = false;
+        userIn.bit.element = null;
+        userIn.bit.bit = null;
+        userIn.mouse.x = 0;
+        userIn.mouse.y = 0;
+    }
 });
 document.addEventListener("mousemove", e => {
     if (userIn.mouse.down && userIn.bit.bit) {
@@ -214,6 +225,15 @@ document.addEventListener("mousemove", e => {
         let dy = e.pageY - userIn.mouse.y;
         userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy);
     }
+});
+// Disable context menu on right clicking.
+// I wanted to add this only for the bits
+// But the mouseevent is first and I don't want
+// to tie removing bits to the functioning of the context menu.
+// (i.e. i'm lazy)
+document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+    e.stopPropagation();
 });
 function matchCombo(combo, bitNames) {
     if (bitNames.length != combo.ingredients.length)
@@ -276,12 +296,3 @@ function initBaseBits(baseBitNames) {
 }
 // Driver code
 populateLists();
-// 4 base elements
-// const water = Bit.fromName("water");
-// const air = Bit.fromName("air");
-// const earth = Bit.fromName("earth");
-// const fire = Bit.fromName("fire");
-// if (water) water.setPosition(10, 10);
-// if (air) air.setPosition(100, 10);
-// if (earth) earth.setPosition(190, 10);
-// if (fire) fire.setPosition(280, 10);
