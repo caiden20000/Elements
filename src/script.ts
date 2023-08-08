@@ -3,6 +3,7 @@ var gameArea: HTMLDivElement = document.getElementById("gamearea") as HTMLDivEle
 // List of bits that currently exist in gameArea
 var bitList: Bit[] = [];
 
+// Object to keep track of dragging and key state.
 var userIn = {
     shiftDown: false,
     mouse: {
@@ -18,8 +19,12 @@ var userIn = {
     }
 }
 
+// List of every type of bit
 var possibleBits: BitTemplate[] = [];
+// List of every possible combination
 var combinations: Combination[] = [];
+// List of BASE bits - The ones that never leave.
+var baseBits: Bit[] = [];
 
 interface BitTemplate {
     name: string;
@@ -48,13 +53,13 @@ class Bit {
         bitList.push(this);
     }
 
-    static fromTemplate(template: BitTemplate) {
-        return new Bit(template.name, template.color, template.textColor);
+    static fromTemplate(template: BitTemplate, isBase: boolean = false) {
+        return new Bit(template.name, template.color, template.textColor, isBase);
     }
 
-    static fromName(bitName: string): Bit | null {
+    static fromName(bitName: string, isBase: boolean = false): Bit | null {
         const template = possibleBits.find(template => template.name == bitName);
-        return template ? Bit.fromTemplate(template) : null;
+        return template ? Bit.fromTemplate(template, isBase) : null;
     }
 
     setPosition(x: number, y: number) {
@@ -269,14 +274,31 @@ function getJSONFromFile(filename: string, callback: Function) {
     xmlhttp.send();
 }
 
+// Fill possibleBits, combinations, and initializes baseBits
 function populateLists(filename: string = "bits.json") {
     console.log("Requesting combinations...");
     getJSONFromFile(filename, (file: any) => {
         console.log("Recieved! Applying combinations...");
         possibleBits = file.bits;
         combinations = file.combinations;
+        let baseBitNames = file.baseBits;
+        initBaseBits(baseBitNames);
         console.log("Loaded!");
     })
+}
+
+// inits baseBits with a list of names.
+// Be sure these exist in the possibleBits list.
+function initBaseBits(baseBitNames: string[]) {
+    let pos = 10;
+    for (let name of baseBitNames) {
+        const newBit = Bit.fromName(name, true);
+        if (newBit) {
+            newBit.setPosition(10, pos);
+            baseBits.push(newBit);
+            pos += 90;
+        }
+    }
 }
 
 
@@ -286,12 +308,12 @@ function populateLists(filename: string = "bits.json") {
 populateLists();
 
 // 4 base elements
-const water = Bit.fromName("water");
-const air = Bit.fromName("air");
-const earth = Bit.fromName("earth");
-const fire = Bit.fromName("fire");
+// const water = Bit.fromName("water");
+// const air = Bit.fromName("air");
+// const earth = Bit.fromName("earth");
+// const fire = Bit.fromName("fire");
 
-if (water) water.setPosition(10, 10);
-if (air) air.setPosition(100, 10);
-if (earth) earth.setPosition(190, 10);
-if (fire) fire.setPosition(280, 10);
+// if (water) water.setPosition(10, 10);
+// if (air) air.setPosition(100, 10);
+// if (earth) earth.setPosition(190, 10);
+// if (fire) fire.setPosition(280, 10);
