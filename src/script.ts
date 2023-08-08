@@ -180,29 +180,24 @@ function findMidpoint(rects: DOMRect[]) {
 function findPointsAbout(rects: DOMRect[], numberOfPoints: number): {top: number, left: number}[] {
     if (rects.length == 0) return [];
     if (numberOfPoints < 2) return [findMidpoint(rects)]
-    let topmost = null, bottommost = null;
-    let leftmost = null, rightmost = null;
-    let avgTop = 0, avgLeft = 0;
+    let topmost = null as number | null, bottommost = null as number | null;
+    let leftmost = null as number | null, rightmost = null as number | null;
     for (let rect of rects) {
         if (topmost == null || rect.top < topmost) topmost = rect.top;
         if (bottommost == null || rect.top > bottommost) bottommost = rect.top;
         if (leftmost == null || rect.left < leftmost) leftmost = rect.left;
         if (rightmost == null || rect.left > rightmost) rightmost = rect.left;
-        avgTop += rect.top;
-        avgLeft += rect.left;
     }
-    avgTop /= rects.length;
-    avgLeft /= rects.length;
     topmost ??= 0, bottommost ??= 0, leftmost ??= 0, rightmost ??= 0;
     const verticalInterval = (bottommost - topmost) / (numberOfPoints - 1);
     const horizontalInterval = (rightmost - leftmost) / (numberOfPoints - 1);
 
-    let results = [];
+    let results: {top: number, left: number}[] = [];
     for (let i=0; i<numberOfPoints; i++) {
         results.push({
             top: topmost + verticalInterval * i,
             left: leftmost + horizontalInterval * i
-        })
+        });
     }
 
     return results;
