@@ -1,0 +1,46 @@
+{
+    "baseBits": [
+        "Air",
+        "Earth",
+        "Fire",
+        "Water"
+    ],
+    "bits": [
+        {
+            "name": "Air",
+            "color": "#aabbff",
+            "textColor": "#000000"
+        },
+        {
+            "name": "Earth",
+            "color": "#883322",
+            "textColor": "#ffffff"
+        },
+        {
+            "name": "Fire",
+            "color": "#ff5544",
+            "textColor": "#000000"
+        },
+        {
+            "name": "Water",
+            "color": "#4444ff",
+            "textColor": "#000000"
+        },
+        {
+            "name": "Cloud",
+            "color": "#dddddd",
+            "textColor": "#000000"
+        }
+    ],
+    "combinations": [
+        {
+            "ingredients": [
+                "Water",
+                "Air"
+            ],
+            "results": [
+                "Cloud"
+            ]
+        }
+    ]
+}
