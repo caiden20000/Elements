@@ -1,203 +1,243 @@
+"use strict";
+// Main HTML area used for the game
 var gameArea = document.getElementById("gamearea");
-
-var elementList = [];
-
-var CUSTOMS = true;
-
-class ElementBox {
+// List of bits that currently exist in gameArea
+var bitList = [];
+// Object to keep track of dragging and key state.
+var userIn = {
+    shiftDown: false,
+    mouse: {
+        down: false,
+        x: 0,
+        y: 0
+    },
+    bit: {
+        bit: null,
+        element: null,
+        x: 0,
+        y: 0,
+    }
+};
+// List of every type of bit
+var possibleBits = [];
+// List of every possible combination
+var combinations = [];
+// List of BASE bits - The ones that never leave.
+var baseBits = [];
+class Bit {
     constructor(name, color, textColor, isBase = false) {
         this.name = name;
         this.color = color;
         this.textColor = textColor;
-        this.el = document.createElement("div");
+        this.element = document.createElement("div");
         this.isBase = isBase;
-        this.initEl(gameArea);
-        elementList.push(this);
+        this.initElement(gameArea);
+        bitList.push(this);
     }
-
+    static fromTemplate(template, isBase = false) {
+        return new Bit(template.name, template.color, template.textColor, isBase);
+    }
+    static fromName(bitName, isBase = false) {
+        const template = possibleBits.find(template => template.name == bitName);
+        return template ? Bit.fromTemplate(template, isBase) : null;
+    }
     setPosition(x, y) {
-        this.el.style["top"] = `${y}px`;
-        this.el.style["left"] = `${x}px`;
+        this.element.style["top"] = `${y}px`;
+        this.element.style["left"] = `${x}px`;
     }
-
-    spawnCopy(left = null, top = null) {
-        let copy_el = new ElementBox(this.name, this.color, this.textColor, false);
-        if (top == null && left == null) {
-            let box = this.el.getBoundingClientRect();
-            copy_el.setPosition(box.left, box.top);
-        } else {
-            copy_el.setPosition(left, top);
-        }
-        return copy_el;
+    spawnCopy() {
+        let copyBit = new Bit(this.name, this.color, this.textColor, false);
+        let rect = this.getRect();
+        copyBit.setPosition(rect.left, rect.top);
+        return copyBit;
     }
-
-    initEl(area) {
-        this.el.appendChild(document.createTextNode(this.name));
-        this.el.classList.add("element");
-        this.el.style["background-color"] = this.color;
-        this.el.style["color"] = this.textColor;
-        area.appendChild(this.el);
-
-        this.el.addEventListener("mousedown", e => {
-            let target;
+    getRect() {
+        return this.element.getBoundingClientRect();
+    }
+    initElement(area) {
+        this.element.appendChild(document.createTextNode(this.name));
+        this.element.classList.add("element");
+        this.element.style.background = this.color;
+        this.element.style.color = this.textColor;
+        area.appendChild(this.element);
+        this.element.addEventListener("mousedown", e => {
+            let targetBit;
             // Copy when is "base" or holding shift
-            if (this.isBase || holdingShift) target = this.spawnCopy();
-            else target = this;
-            dragging.element = target.el;
-            dragging.elementBox = target;
-            let rect = target.el.getBoundingClientRect()
-            dragging.elementX = rect.left;
-            dragging.elementY = rect.top;
+            if (this.isBase || userIn.shiftDown)
+                targetBit = this.spawnCopy();
+            else
+                targetBit = this;
+            userIn.bit.element = targetBit.element;
+            userIn.bit.bit = targetBit;
+            let rect = targetBit.getRect();
+            userIn.bit.x = rect.left;
+            userIn.bit.y = rect.top;
             // Make element TOP on z
-            target.putOnTop();
-        })
+            targetBit.putOnTop();
+        });
     }
-
-    combine(elementBox) {
-        console.log("Combinging with " + elementBox.name);
-        let result = getCombinationResult(this.name, elementBox.name);
-        if (result != null) {
-            let newPos = findMidpoint(this, elementBox);
-            if (this.isBase == false) this.remove();
-            if (elementBox.isBase == false) elementBox.remove();
-            result.setPosition(newPos.left, newPos.top);
-        }
-    }
-
+    // removes from list and DOM
     remove() {
-        let index = elementList.indexOf(this);
-        if (index > -1) elementList.splice(index, 1);
-        this.el.remove();
+        let index = bitList.indexOf(this);
+        if (index > -1)
+            bitList.splice(index, 1);
+        this.element.remove();
     }
-
     putOnTop() {
         // Put on top in DOM
-        gamearea.insertBefore(this.el, null);
+        gameArea.insertBefore(this.element, null);
         // Remove and put on top of elementList
-        let index = elementList.indexOf(this);
-        if (index > -1) elementList.splice(index, 1);
-        elementList.push(this);
+        let index = bitList.indexOf(this);
+        if (index > -1)
+            bitList.splice(index, 1);
+        bitList.push(this);
     }
 }
-
-// elBox is released element.
-// Finds the elements elBox overlaps.
-// Gets the element most overlapped by elBox.
-function findOverlap(elBox) {
-    let rect1 = elBox.el.getBoundingClientRect();
+function getRectOverlap(rect1, rect2) {
+    let vertOverlap = Math.max(0, Math.min(rect1.bottom - rect2.top, rect2.bottom - rect1.top));
+    let horiOverlap = Math.max(0, Math.min(rect1.right - rect2.left, rect2.right - rect1.left));
+    let overlapArea = vertOverlap * horiOverlap;
+    return overlapArea;
+}
+function findOverlap(bit) {
+    let rect1 = bit.getRect();
     let maxOverlap = 0;
-    let overlappingElement = null;
-    for (let box of elementList) {
-        if (box === elBox) continue;
-        let rect2 = box.el.getBoundingClientRect();
-        let vertOverlap = Math.max(0, Math.min(rect1.bottom - rect2.top, rect2.bottom - rect1.top));
-        let horiOverlap = Math.max(0, Math.min(rect1.right - rect2.left, rect2.right - rect1.left));
-        let overlapArea = vertOverlap * horiOverlap;
+    let overlapBit = null;
+    for (let secondBit of bitList) {
+        if (secondBit === bit)
+            continue;
+        let rect2 = secondBit.getRect();
+        let overlapArea = getRectOverlap(rect1, rect2);
         if (overlapArea > 0 && overlapArea >= maxOverlap) {
             maxOverlap = overlapArea;
-            overlappingElement = box;
+            overlapBit = secondBit;
         }
     }
-    if (overlappingElement != null) elBox.combine(overlappingElement);
+    // TODO: Pass in an ordered list of overlapping elements or something to enable 3+ bit combos
+    if (overlapBit != null)
+        combineBits([bit, overlapBit]);
 }
-
-function findMidpoint(elBox1, elBox2) {
-    let rect1 = elBox1.el.getBoundingClientRect();
-    let rect2 = elBox2.el.getBoundingClientRect();
-    let top = (rect1.top + rect2.top) / 2;
-    let left = (rect1.left + rect2.left) / 2;
+function combineBits(bits) {
+    const bitNames = bits.map(bit => bit.name);
+    const results = getCombinationResult(bitNames);
+    if (results.length != 0) {
+        const rectList = bits.map(bit => bit.getRect());
+        const newPos = findMidpoint(rectList);
+        for (let bit of bits) {
+            if (!bit.isBase)
+                bit.remove();
+        }
+        // TODO: Space out multiple combo results
+        const points = findPointsAbout(rectList, results.length);
+        for (let i = 0; i < results.length; i++) {
+            results[i].setPosition(points[i].left, points[i].top);
+        }
+        //for (let result of results) result.setPosition(newPos.left, newPos.top);
+    }
+}
+function findMidpoint(rects) {
+    let avgTop = 0;
+    let avgLeft = 0;
+    for (let rect of rects) {
+        avgTop += rect.top;
+        avgLeft += rect.left;
+    }
+    avgTop /= rects.length;
+    avgLeft /= rects.length;
     return {
-        top: top,
-        left: left
+        top: avgTop,
+        left: avgLeft
     };
 }
-
-var dragging = {
-    mouseDown: false,
-    element: null,
-    elementBox: null,
-    clickX: 0,
-    clickY: 0,
-    elementX: 0,
-    elementY: 0
-};
-
-var holdingShift = false;
-
+// For spawning multiple bits not directly on top of each other
+function findPointsAbout(rects, numberOfPoints) {
+    if (rects.length == 0)
+        return [];
+    if (numberOfPoints < 2)
+        return [findMidpoint(rects)];
+    let topmost = null, bottommost = null;
+    let leftmost = null, rightmost = null;
+    let avgTop = 0, avgLeft = 0;
+    for (let rect of rects) {
+        if (topmost == null || rect.top < topmost)
+            topmost = rect.top;
+        if (bottommost == null || rect.top > bottommost)
+            bottommost = rect.top;
+        if (leftmost == null || rect.left < leftmost)
+            leftmost = rect.left;
+        if (rightmost == null || rect.left > rightmost)
+            rightmost = rect.left;
+        avgTop += rect.top;
+        avgLeft += rect.left;
+    }
+    avgTop /= rects.length;
+    avgLeft /= rects.length;
+    topmost !== null && topmost !== void 0 ? topmost : (topmost = 0), bottommost !== null && bottommost !== void 0 ? bottommost : (bottommost = 0), leftmost !== null && leftmost !== void 0 ? leftmost : (leftmost = 0), rightmost !== null && rightmost !== void 0 ? rightmost : (rightmost = 0);
+    const verticalInterval = (bottommost - topmost) / (numberOfPoints - 1);
+    const horizontalInterval = (rightmost - leftmost) / (numberOfPoints - 1);
+    let results = [];
+    for (let i = 0; i < numberOfPoints; i++) {
+        results.push({
+            top: topmost + verticalInterval * i,
+            left: leftmost + horizontalInterval * i
+        });
+    }
+    return results;
+}
 document.addEventListener("keydown", e => {
-    if (e.key == "Shift") holdingShift = true;
+    if (e.key == "Shift")
+        userIn.shiftDown = true;
 });
-
 document.addEventListener("keyup", e => {
-    if (e.key == "Shift") holdingShift = false;
+    if (e.key == "Shift")
+        userIn.shiftDown = false;
 });
-
 document.addEventListener("mousedown", e => {
-    dragging.mouseDown = true;
-    dragging.clickX = e.pageX;
-    dragging.clickY = e.pageY;
+    userIn.mouse.down = true;
+    userIn.mouse.x = e.pageX;
+    userIn.mouse.y = e.pageY;
 });
-
 document.addEventListener("mouseup", e => {
     // TODO: Put dragged element on end of elementList
     // to mirror gameArea child order
-    if (dragging.elementBox != null) findOverlap(dragging.elementBox);
-    dragging.mouseDown = false;
-    dragging.element = null;
-    dragging.elementBox = null;
-    dragging.clickX = 0;
-    dragging.clickY = 0;
+    if (userIn.bit.bit != null)
+        findOverlap(userIn.bit.bit);
+    userIn.mouse.down = false;
+    userIn.bit.element = null;
+    userIn.bit.bit = null;
+    userIn.mouse.x = 0;
+    userIn.mouse.y = 0;
 });
-
 document.addEventListener("mousemove", e => {
-    if (dragging.mouseDown && dragging.element) {
-        let dx = e.pageX - dragging.clickX;
-        let dy = e.pageY - dragging.clickY;
-        dragging.elementBox.setPosition(dragging.elementX + dx, dragging.elementY + dy)
+    if (userIn.mouse.down && userIn.bit.bit) {
+        let dx = e.pageX - userIn.mouse.x;
+        let dy = e.pageY - userIn.mouse.y;
+        userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy);
     }
 });
-
-class Combination {
-    constructor(e1, e2, resultName) {
-        this.e1 = e1;
-        this.e2 = e2;
-        this.resultName = resultName;
+function matchCombo(combo, bitNames) {
+    if (bitNames.length != combo.ingredients.length)
+        return false;
+    bitNames.sort();
+    combo.ingredients.sort();
+    for (let i = 0; i < bitNames.length; i++) {
+        if (bitNames[i].toLowerCase() != combo.ingredients[i].toLowerCase())
+            return false;
     }
-
-    test(name1, name2) {
-        let a1 = name1.toLowerCase(),
-            a2 = name2.toLowerCase(),
-            b1 = this.e1.toLowerCase(),
-            b2 = this.e2.toLowerCase();
-        return (a1 == b1 && a2 == b2) || (a2 == b1 && a1 == b2);
-    }
-
-    result() {
-        let box = getElementFromPossible(this.resultName);
-        // Error occurs if result element is not defined, misspelled, etc
-        return box;
-    }
+    return true;
 }
-
-function getElementFromPossible(name) {
-    for (let el of possibleElements) {
-        if (el[0].toLowerCase() == name.toLowerCase()) {
-            return new ElementBox(el[0], el[1], el[2]);
-        }
-    }
-    if (CUSTOMS) createCustomElement(name);
-    return null;
+function getCombinationResult(bitNames) {
+    const foundCombo = combinations.find(combo => matchCombo(combo, bitNames));
+    if (foundCombo)
+        return foundCombo.results.map(bit => Bit.fromName(bit)).filter(bit => bit);
+    return [];
 }
-
-// Returns an ElementBox or null
-function getCombinationResult(name1, name2) {
-    for (let combo of combinations) {
-        if (combo.test(name1, name2)) return combo.result();
-    }
-    if (CUSTOMS) createCustomCombination(name1, name2);
-    return null;
+function doesBitExist(bitName) {
+    return possibleBits.some(template => template.name.toLowerCase() == bitName.toLowerCase());
 }
-
+//////////////////////
+// Customs loading  //
+//////////////////////
 function getJSONFromFile(filename, callback) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
@@ -209,82 +249,39 @@ function getJSONFromFile(filename, callback) {
     xmlhttp.open("GET", filename, false);
     xmlhttp.send();
 }
-
-function populateLists() {
+// Fill possibleBits, combinations, and initializes baseBits
+function populateLists(filename = "bits.json") {
     console.log("Requesting combinations...");
-    getJSONFromFile("elements.json", file => {
+    getJSONFromFile(filename, (file) => {
         console.log("Recieved! Applying combinations...");
-        possibleElements = file.possibleElements;
-        for (let combo of file.combinations) {
-            combinations.push(new Combination(combo[0], combo[1], combo[2]));
-        }
+        possibleBits = file.bits;
+        combinations = file.combinations;
+        let baseBitNames = file.baseBits;
+        initBaseBits(baseBitNames);
         console.log("Loaded!");
-    })
+    });
 }
-
-function createCustomCombination(name1, name2) {
-    let dialog = document.getElementById("comboDialog");
-    let comboTitle = document.getElementById("comboTitle");
-    comboTitle.innerHTML = `${name1} + ${name2}`;
-    customCombo1 = name1;
-    customCombo2 = name2;
-    dialog.showModal();
-}
-
-var customElement;
-var customCombo1, customCombo2;
-
-function createCustomElement(name) {
-    let dialog = document.getElementById("elementDialog");
-    let title = document.getElementById("elementTitle");
-    title.innerHTML = `Creating "${name}":`;
-    customElement = name;
-    dialog.showModal();
-}
-
-document.getElementById("submitCombo").addEventListener("click", e => {
-    let result = document.getElementById("resultName");
-    let elementName = result.value;
-    result.value = "";
-    combinations.push(new Combination(customCombo1, customCombo2, elementName));
-    let el = getElementFromPossible(elementName);
-    if (el) el.remove();
-})
-
-document.getElementById("submitElement").addEventListener("click", e => {
-    let boxColor = document.getElementById("boxColor");
-    let textColor = document.getElementById("textColor");
-    possibleElements.push([customElement, boxColor.value, textColor.value]);
-    boxColor.value = "#999999";
-    textColor.value = "#000000";
-})
-
-// For retrieving customs from the command line
-function getComboArray() {
-    let newList = [];
-        for (let combo of combinations) {
-        newList.push([combo.e1, combo.e2, combo.resultName])
+// inits baseBits with a list of names.
+// Be sure these exist in the possibleBits list.
+function initBaseBits(baseBitNames) {
+    let pos = 10;
+    for (let name of baseBitNames) {
+        const newBit = Bit.fromName(name, true);
+        if (newBit) {
+            newBit.setPosition(10, pos);
+            baseBits.push(newBit);
+            pos += 90;
+        }
     }
-    return newList;
 }
-
-var possibleElements = [];
-var combinations = [];
-populateLists();
-
-
-
-
-
 // Driver code
-
+populateLists();
 // 4 base elements
-let water = new ElementBox("Water", "#44F", "black", true);
-water.setPosition(10, 10);
-let air = new ElementBox("Air", "#ABF", "black", true);
-air.setPosition(100, 10);
-let earth = new ElementBox("Earth", "#832", "white", true);
-earth.setPosition(190, 10);
-let fire = new ElementBox("Fire", "#F54", "black", true);
-fire.setPosition(280, 10);
-
+// const water = Bit.fromName("water");
+// const air = Bit.fromName("air");
+// const earth = Bit.fromName("earth");
+// const fire = Bit.fromName("fire");
+// if (water) water.setPosition(10, 10);
+// if (air) air.setPosition(100, 10);
+// if (earth) earth.setPosition(190, 10);
+// if (fire) fire.setPosition(280, 10);
