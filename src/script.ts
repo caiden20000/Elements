@@ -2,8 +2,6 @@
 var gameArea: HTMLDivElement = document.getElementById("gamearea") as HTMLDivElement;
 // List of bits that currently exist in gameArea
 var bitList: Bit[] = [];
-// Whether or not we're building a custom gamerule set
-var ENABLE_CUSTOMS = true;
 
 var userIn = {
     shiftDown: false,
@@ -18,18 +16,6 @@ var userIn = {
         x: 0,
         y: 0,
     }
-}
-
-var customsData = {
-    bit: {
-        name: "",
-        color: "",
-        textColor: ""
-    } as BitTemplate,
-    combo: {
-        ingredients: [],
-        results: []
-    } as Combination
 }
 
 var possibleBits: BitTemplate[] = [];
@@ -260,7 +246,6 @@ function matchCombo(combo: Combination, bitNames: string[]): boolean {
 function getCombinationResult(bitNames: string[]): Bit[] {
     const foundCombo = combinations.find(combo => matchCombo(combo, bitNames));
     if (foundCombo) return foundCombo.results.map(bit => Bit.fromName(bit)).filter(bit => bit) as Bit[];
-    if (ENABLE_CUSTOMS) createCustomCombination(bitNames);
     return [];
 }
 
@@ -292,62 +277,6 @@ function populateLists(filename: string = "bits.json") {
         combinations = file.combinations;
         console.log("Loaded!");
     })
-}
-
-//////////////////////
-// Customs creation //
-//////////////////////
-
-function createCustomCombination(bitNames: string[]) {
-    let dialog = document.getElementById("comboDialog") as HTMLDialogElement;
-    let comboTitle = document.getElementById("comboTitle") as HTMLElement;
-    comboTitle.innerHTML = bitNames.join(" + ");
-    customsData.combo.ingredients = bitNames;
-    dialog.showModal();
-}
-
-function createCustomBit(name: string) {
-    let dialog = document.getElementById("elementDialog") as HTMLDialogElement;
-    let title = document.getElementById("elementTitle") as HTMLElement;
-    title.innerHTML = `Creating "${name}":`;
-    customsData.bit.name = name;
-    dialog.showModal();
-}
-
-
-
-(document.getElementById("submitCombo") as HTMLElement).addEventListener("click", e => {
-    let result = document.getElementById("resultName") as HTMLInputElement;
-    // Split multiple bit results with plus signs
-    let bitNames = result.value.split("+");
-    result.value = "";
-    combinations.push({
-        ingredients: customsData.combo.ingredients,
-        results: bitNames
-    });
-    
-    if (ENABLE_CUSTOMS) {
-        // TODO: ASYNC EVERYTHING
-        for (let bitName of bitNames) {
-            // if (doesBitExist(bitName) == false) ???
-        }
-    }
-});
-
-(document.getElementById("submitElement") as HTMLElement).addEventListener("click", e => {
-    let boxColor = document.getElementById("boxColor") as HTMLInputElement;
-    let textColor = document.getElementById("textColor") as HTMLInputElement;
-    possibleBits.push(customsData.bit);
-    boxColor.value = "#999999";
-    textColor.value = "#000000";
-});
-
-// Exact same format as should be in bits.json
-function getCurrentGameRules() {
-    return {
-        bits: possibleBits,
-        combinations: combinations
-    }
 }
 
 
