@@ -360,6 +360,10 @@ cPicker2.addEventListener("input", e => {
 // Submit button
 customSubmit.addEventListener("click", e => {
     const name = customBitName.value;
+    if (name.trim() == "") {
+        hideCustomBitMaker();
+        return;
+    }
     const color = cPicker1.value;
     const textColor = cPicker2.value;
     possibleBits.push({
@@ -384,6 +388,9 @@ function showCustomBitMaker(left: number, top: number) {
 }
 
 function hideCustomBitMaker() {
+    cPicker1.value = "#555555";
+    cPicker2.value = "#000000";
+    customBitName.value = "";
     customContainer.style.display = "none";
 }
 
