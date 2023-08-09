@@ -433,7 +433,7 @@ function hideCustomBitMaker() {
 
 function exportJSON() {
     const newFile = {
-        baseBits: baseBits,
+        baseBits: baseBits.map(bit => bit.name),
         bits: possibleBits,
         combinations: combinations
     };
