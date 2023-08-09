@@ -388,10 +388,14 @@ function showCustomBitMaker(left: number, top: number) {
 }
 
 function hideCustomBitMaker() {
-    cPicker1.value = "#555555";
+    cPicker1.value = "#AAAAAA";
     cPicker2.value = "#000000";
     customBitName.value = "";
     customContainer.style.display = "none";
+    // Update colors
+    customBit.style.background = cPicker1.value;
+    customBit.style.color = cPicker2.value;
+    customBitName.style.color = cPicker2.value;
 }
 
 
