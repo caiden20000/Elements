@@ -1,6 +1,5 @@
 export { }
 // https://jsfiddle.net/1g5ty23k/88/
-// TODO: Move Coloris from CDN to local
 
 // Main HTML area used for the game
 var gameArea: HTMLDivElement = document.getElementById("gamearea") as HTMLDivElement;
@@ -122,6 +121,14 @@ class Bit {
         this.element.remove();
     }
 
+    hide() {
+        this.element.style.display = "none";
+    }
+
+    show() {
+        this.element.style.display = "flex";
+    }
+
     putOnTop() {
         // Put on top in DOM
         gameArea.insertBefore(this.element, null);
@@ -158,20 +165,38 @@ function findOverlap(bit: Bit) {
 }
 
 function combineBits(bits: Bit[]) {
+    if (bits.length < 2) return;
     const bitNames = bits.map(bit => bit.name);
+    const rectList = bits.map(bit => bit.getRect());
     const results = getCombinationResult(bitNames);
     if (results.length != 0) {
-        const rectList = bits.map(bit => bit.getRect())
-        const newPos = getMidpoint(rectList);
-        for (let bit of bits) {
-            if (!bit.isBase) bit.remove();
-        }
-        // TODO: Space out multiple combo results
         const points = getPointsAbout(rectList, results.length);
+        for (let bit of bits) if (!bit.isBase) bit.remove();
+        // Space out multiple combo results
         for (let i = 0; i < results.length; i++) {
             results[i].setPosition(points[i].left, points[i].top);
         }
-        //for (let result of results) result.setPosition(newPos.left, newPos.top);
+    } else {
+        // Make custom bit
+        const midpoint = getMidpoint(rectList);
+        for (let bit of bits) if (!bit.isBase) bit.hide();
+        showCustomBitMaker(midpoint.left, midpoint.top, (results: Bit[]) => {
+            if (results.length != 0) {
+                // Make the custom combo
+                combinations.push({
+                    ingredients: bits.map(bit => bit.name),
+                    results: results.map(bit => bit.name)
+                });
+                const points = getPointsAbout(rectList, results.length);
+                for (let bit of bits) if (!bit.isBase) bit.remove();
+                // Space out multiple combo results
+                for (let i = 0; i < results.length; i++) {
+                    results[i].setPosition(points[i].left, points[i].top);
+                }
+            } else {
+                for (let bit of bits) if (!bit.isBase) bit.show();
+            }
+        });
     }
 }
 
@@ -281,6 +306,7 @@ function matchCombo(combo: Combination, bitNames: string[]): boolean {
 function getCombinationResult(bitNames: string[]): Bit[] {
     const foundCombo = combinations.find(combo => matchCombo(combo, bitNames));
     if (foundCombo) return foundCombo.results.map(bit => Bit.fromName(bit)).filter(bit => bit) as Bit[];
+    
     return [];
 }
 
@@ -345,6 +371,7 @@ const customBitName = document.getElementById("bit-name") as HTMLInputElement;
 const customBit = document.getElementById("custom-bit") as HTMLDivElement;
 const customSubmit = document.getElementById("submit-custom") as HTMLButtonElement;
 const customContainer = document.getElementById("custom-container") as HTMLDivElement;
+var customSubmitCallback: Function | null = null;
 
 // Background color
 cPicker1.addEventListener("input", e => {
@@ -362,6 +389,7 @@ customSubmit.addEventListener("click", e => {
     const name = customBitName.value;
     if (name.trim() == "") {
         hideCustomBitMaker();
+        if (customSubmitCallback) customSubmitCallback([]);
         return;
     }
     const color = cPicker1.value;
@@ -378,13 +406,16 @@ customSubmit.addEventListener("click", e => {
     }
     const customRect = customBit.getBoundingClientRect();
     newBit.setPosition(customRect.left, customRect.top);
+    if (customSubmitCallback) customSubmitCallback([newBit]);
     hideCustomBitMaker();
 });
 
-function showCustomBitMaker(left: number, top: number) {
+function showCustomBitMaker(left: number, top: number, callback: Function) {
     customContainer.style["top"] = `${top}px`;
     customContainer.style["left"] = `${left}px`;
     customContainer.style.display = "flex";
+
+    customSubmitCallback = callback;
 }
 
 function hideCustomBitMaker() {
