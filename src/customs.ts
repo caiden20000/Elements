@@ -335,12 +335,15 @@ function populateLists(filename: string = "bits.json") {
     console.log("Requesting combinations...");
     getJSONFromFile(filename, (file: any) => {
         console.log("Recieved! Applying combinations...");
-        possibleBits = file.bits;
-        combinations = file.combinations;
-        let baseBitNames = file.baseBits;
-        initBaseBits(baseBitNames);
+        loadFromJSON(file);
         console.log("Loaded!");
     })
+}
+
+function loadFromJSON(json: {baseBits: string[], bits: BitTemplate[], combinations: Combination[]}) {
+    possibleBits = json.bits;
+    combinations = json.combinations;
+    initBaseBits(json.baseBits);
 }
 
 // inits baseBits with a list of names.
