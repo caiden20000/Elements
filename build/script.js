@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Main HTML area used for the game
 var gameArea = document.getElementById("gamearea");
 // List of bits that currently exist in gameArea
