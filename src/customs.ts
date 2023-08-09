@@ -429,6 +429,15 @@ function hideCustomBitMaker() {
     customBitName.style.color = cPicker2.value;
 }
 
+function exportJSON() {
+    const newFile = {
+        baseBits: baseBits,
+        bits: possibleBits,
+        combinations: combinations
+    };
+    console.log(newFile);
+}
+
 
 // Driver code
 
