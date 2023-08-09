@@ -310,12 +310,14 @@ function populateLists(filename = "bits.json") {
     console.log("Requesting combinations...");
     getJSONFromFile(filename, (file) => {
         console.log("Recieved! Applying combinations...");
-        possibleBits = file.bits;
-        combinations = file.combinations;
-        let baseBitNames = file.baseBits;
-        initBaseBits(baseBitNames);
+        loadFromJSON(file);
         console.log("Loaded!");
     });
+}
+function loadFromJSON(json) {
+    possibleBits = json.bits;
+    combinations = json.combinations;
+    initBaseBits(json.baseBits);
 }
 // inits baseBits with a list of names.
 // Be sure these exist in the possibleBits list.
@@ -355,23 +357,25 @@ cPicker2.addEventListener("input", e => {
 });
 // Submit button
 customSubmit.addEventListener("click", e => {
-    const name = customBitName.value;
-    if (name.trim() == "") {
+    const name = customBitName.value.trim();
+    if (name == "") {
         hideCustomBitMaker();
         if (customSubmitCallback)
             customSubmitCallback([]);
         return;
     }
-    const color = cPicker1.value;
-    const textColor = cPicker2.value;
-    possibleBits.push({
-        name: name,
-        color: color,
-        textColor: textColor
-    });
+    if (doesBitExist(name) == false) {
+        const color = cPicker1.value.trim();
+        const textColor = cPicker2.value.trim();
+        possibleBits.push({
+            name: name,
+            color: color,
+            textColor: textColor
+        });
+    }
     const newBit = Bit.fromName(name);
     if (newBit == null) {
-        console.log("ERROR: New bit returns null??");
+        console.log("ERROR: New bit returned null");
         return;
     }
     const customRect = customBit.getBoundingClientRect();
@@ -398,7 +402,7 @@ function hideCustomBitMaker() {
 }
 function exportJSON() {
     const newFile = {
-        baseBits: baseBits,
+        baseBits: baseBits.map(bit => bit.name),
         bits: possibleBits,
         combinations: combinations
     };
