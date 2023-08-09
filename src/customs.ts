@@ -349,7 +349,6 @@ const customContainer = document.getElementById("custom-container") as HTMLDivEl
 // Background color
 cPicker1.addEventListener("input", e => {
     customBit.style.background = cPicker1.value;
-    console.log(cPicker1.value);
 });
 
 // Text color
