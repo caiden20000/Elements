@@ -386,22 +386,24 @@ cPicker2.addEventListener("input", e => {
 
 // Submit button
 customSubmit.addEventListener("click", e => {
-    const name = customBitName.value;
-    if (name.trim() == "") {
+    const name = customBitName.value.trim();
+    if (name == "") {
         hideCustomBitMaker();
         if (customSubmitCallback) customSubmitCallback([]);
         return;
     }
-    const color = cPicker1.value;
-    const textColor = cPicker2.value;
-    possibleBits.push({
-        name: name,
-        color: color,
-        textColor: textColor
-    });
+    if (doesBitExist(name) == false) {
+        const color = cPicker1.value.trim();
+        const textColor = cPicker2.value.trim();
+        possibleBits.push({
+            name: name,
+            color: color,
+            textColor: textColor
+        });
+    }
     const newBit = Bit.fromName(name);
     if (newBit == null) {
-        console.log("ERROR: New bit returns null??");
+        console.log("ERROR: New bit returned null");
         return;
     }
     const customRect = customBit.getBoundingClientRect();
