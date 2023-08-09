@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="coloris.min.css" />
+    <script>var exports = {};</script>
+    <script src="coloris.min.js"></script>
+    <title>Elements - CUSTOMS</title>
+    <style>
+        html {
+            font-family: sans-serif;
+        }
+
+        .element {
+            font-family: sans-serif;
+            width: 75px;
+            height: 75px;
+            border: 2px solid black;
+            border-radius: 3px;
+            font-size: 15px;
+
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            display: flex;
+
+            user-select: none;
+            cursor: grab;
+            position: absolute;
+        }
+
+        .custom {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            width: 75px;
+            height: 120px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .custom .element {
+            position: static;
+            display: inline-block;
+        }
+
+        .custom button {
+            width: 75px;
+        }
+
+        #bit-name {
+            background: inherit;
+            width: 75px;
+            height: 75px;
+            text-align: center;
+
+            font-size: 15px;
+
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .custom .color-picker {
+            width: 75px;
+            height: 15px;
+
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gamearea">
+
+        <div class="custom" id="custom-container" style="top: 10px; left: 100px;">
+            <button id="submit-custom">Submit</button>
+            <div class="element" id="custom-bit">
+                <input type="text" id="bit-name" />
+            </div>
+            <input type="text" data-coloris id="color-picker-1" class="color-picker">
+            <input type="text" data-coloris id="color-picker-2" class="color-picker">
+        </div>
+
+    </div>
+    <script>
+        Coloris({
+            theme: 'polaroid',
+            themeMode: 'dark',
+            alpha: false
+        });
+    </script>
+    <script src="customs.js"></script>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// https://jsfiddle.net/1g5ty23k/88/
 // Main HTML area used for the game
 var gameArea = document.getElementById("gamearea");
 // List of bits that currently exist in gameArea
@@ -94,6 +95,12 @@ class Bit {
             bitList.splice(index, 1);
         this.element.remove();
     }
+    hide() {
+        this.element.style.display = "none";
+    }
+    show() {
+        this.element.style.display = "flex";
+    }
     putOnTop() {
         // Put on top in DOM
         gameArea.insertBefore(this.element, null);
@@ -129,21 +136,49 @@ function findOverlap(bit) {
         combineBits([bit, overlapBit]);
 }
 function combineBits(bits) {
+    if (bits.length < 2)
+        return;
     const bitNames = bits.map(bit => bit.name);
+    const rectList = bits.map(bit => bit.getRect());
     const results = getCombinationResult(bitNames);
     if (results.length != 0) {
-        const rectList = bits.map(bit => bit.getRect());
-        const newPos = getMidpoint(rectList);
-        for (let bit of bits) {
+        const points = getPointsAbout(rectList, results.length);
+        for (let bit of bits)
             if (!bit.isBase)
                 bit.remove();
-        }
-        // TODO: Space out multiple combo results
-        const points = getPointsAbout(rectList, results.length);
+        // Space out multiple combo results
         for (let i = 0; i < results.length; i++) {
             results[i].setPosition(points[i].left, points[i].top);
         }
-        //for (let result of results) result.setPosition(newPos.left, newPos.top);
+    }
+    else {
+        // Make custom bit
+        const midpoint = getMidpoint(rectList);
+        for (let bit of bits)
+            if (!bit.isBase)
+                bit.hide();
+        showCustomBitMaker(midpoint.left, midpoint.top, (results) => {
+            if (results.length != 0) {
+                // Make the custom combo
+                combinations.push({
+                    ingredients: bits.map(bit => bit.name),
+                    results: results.map(bit => bit.name)
+                });
+                const points = getPointsAbout(rectList, results.length);
+                for (let bit of bits)
+                    if (!bit.isBase)
+                        bit.remove();
+                // Space out multiple combo results
+                for (let i = 0; i < results.length; i++) {
+                    results[i].setPosition(points[i].left, points[i].top);
+                }
+            }
+            else {
+                for (let bit of bits)
+                    if (!bit.isBase)
+                        bit.show();
+            }
+        });
     }
 }
 function getMidpoint(rects) {
@@ -275,12 +310,14 @@ function populateLists(filename = "bits.json") {
     console.log("Requesting combinations...");
     getJSONFromFile(filename, (file) => {
         console.log("Recieved! Applying combinations...");
-        possibleBits = file.bits;
-        combinations = file.combinations;
-        let baseBitNames = file.baseBits;
-        initBaseBits(baseBitNames);
+        loadFromJSON(file);
         console.log("Loaded!");
     });
+}
+function loadFromJSON(json) {
+    possibleBits = json.bits;
+    combinations = json.combinations;
+    initBaseBits(json.baseBits);
 }
 // inits baseBits with a list of names.
 // Be sure these exist in the possibleBits list.
@@ -295,5 +332,82 @@ function initBaseBits(baseBitNames) {
         }
     }
 }
+///////////////////////////
+// Customs functionality //
+///////////////////////////
+// Background color
+const cPicker1 = document.getElementById("color-picker-1");
+// Text color
+const cPicker2 = document.getElementById("color-picker-2");
+// input text
+const customBitName = document.getElementById("bit-name");
+// Bit element div
+const customBit = document.getElementById("custom-bit");
+const customSubmit = document.getElementById("submit-custom");
+const customContainer = document.getElementById("custom-container");
+var customSubmitCallback = null;
+// Background color
+cPicker1.addEventListener("input", e => {
+    customBit.style.background = cPicker1.value;
+});
+// Text color
+cPicker2.addEventListener("input", e => {
+    customBit.style.color = cPicker2.value;
+    customBitName.style.color = cPicker2.value;
+});
+// Submit button
+customSubmit.addEventListener("click", e => {
+    const name = customBitName.value.trim();
+    if (name == "") {
+        hideCustomBitMaker();
+        if (customSubmitCallback)
+            customSubmitCallback([]);
+        return;
+    }
+    if (doesBitExist(name) == false) {
+        const color = cPicker1.value.trim();
+        const textColor = cPicker2.value.trim();
+        possibleBits.push({
+            name: name,
+            color: color,
+            textColor: textColor
+        });
+    }
+    const newBit = Bit.fromName(name);
+    if (newBit == null) {
+        console.log("ERROR: New bit returned null");
+        return;
+    }
+    const customRect = customBit.getBoundingClientRect();
+    newBit.setPosition(customRect.left, customRect.top);
+    if (customSubmitCallback)
+        customSubmitCallback([newBit]);
+    hideCustomBitMaker();
+});
+function showCustomBitMaker(left, top, callback) {
+    customContainer.style["top"] = `${top}px`;
+    customContainer.style["left"] = `${left}px`;
+    customContainer.style.display = "flex";
+    customSubmitCallback = callback;
+}
+function hideCustomBitMaker() {
+    cPicker1.value = "#AAAAAA";
+    cPicker2.value = "#000000";
+    customBitName.value = "";
+    customContainer.style.display = "none";
+    // Update colors
+    customBit.style.background = cPicker1.value;
+    customBit.style.color = cPicker2.value;
+    customBitName.style.color = cPicker2.value;
+}
+function exportJSON() {
+    const newFile = {
+        baseBits: baseBits.map(bit => bit.name),
+        bits: possibleBits,
+        combinations: combinations
+    };
+    console.log(newFile);
+}
 // Driver code
+hideCustomBitMaker();
 populateLists();
