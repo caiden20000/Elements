@@ -1,3 +1,4 @@
+export {}
 // Main HTML area used for the game
 var gameArea: HTMLDivElement = document.getElementById("gamearea") as HTMLDivElement;
 // List of bits that currently exist in gameArea
