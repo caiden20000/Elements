@@ -187,6 +187,16 @@ function findOverlap(bit: Bit) {
     if (overlapBit != null) combineBits([bit, overlapBit]);
 }
 
+function isOverlappingAnyBit(bit: Bit): boolean {
+    let rect1 = bit.getRect();
+    for (let secondBit of bitList) {
+        if (secondBit == bit) continue;
+        let rect2 = secondBit.getRect();
+        if (getRectOverlap(rect1, rect2) > 0) return true;
+    }
+    return false;
+}
+
 function combineBits(bits: Bit[]) {
     if (bits.length < 2) return;
     const bitNames = bits.map(bit => bit.name);
@@ -283,8 +293,11 @@ document.addEventListener("mouseup", e => {
         // Left mouse button
         if (userIn.dragging) {
             userIn.dragging = false;
-            if (userIn.bit.bit) userIn.bit.bit.setGrabbingCursor(false);
-            if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
+            if (userIn.bit.bit != null) {
+                userIn.bit.bit.setGrabbingCursor(false);
+                userIn.bit.bit.setInteractionCursor(false);
+                findOverlap(userIn.bit.bit);
+            }
         }
         userIn.mouse.down = false;
         userIn.bit.element = null;
@@ -298,7 +311,10 @@ document.addEventListener("mousemove", e => {
     if (userIn.mouse.down && userIn.bit.bit && userIn.dragging) {
         let dx = e.pageX - userIn.mouse.x;
         let dy = e.pageY - userIn.mouse.y;
-        userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy)
+        userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy);
+        const overlapping = isOverlappingAnyBit(userIn.bit.bit);
+        if (overlapping) userIn.bit.bit.setInteractionCursor(true);
+        else userIn.bit.bit.setInteractionCursor(false);
     }
     else if (userIn.mouse.down && userIn.dragging == false) {
         const dx = Math.abs(e.pageX - userIn.mouse.x);
