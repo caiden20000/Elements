@@ -7,5 +7,3 @@ Super Simple LittleAlchemy-type implementation
 - Brainthink a way that 3+ elements could be combined (optional).
 - ~~Add a way to "pin" an element (convert it to a base element).~~
 - Add a GPT version that generates the combination results on-the-fly.
-
-> Combine script.ts and customs.ts, Don't Repeat Yourself.
