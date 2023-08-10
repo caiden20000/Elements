@@ -91,7 +91,7 @@ class Bit {
                 // Left mouse button
                 let targetBit: Bit;
                 // Copy when is "base" or holding shift
-                if (this.isBase || userIn.shiftDown) targetBit = this.spawnCopy();
+                if (this.isBase || e.shiftKey) targetBit = this.spawnCopy();
                 else targetBit = this;
                 userIn.bit.element = targetBit.element;
                 userIn.bit.bit = targetBit;
@@ -109,6 +109,13 @@ class Bit {
                 }
             }
         });
+
+        this.element.addEventListener("dblclick", e => {
+            if (e.button == 0) {
+                // Left click toggles isBase
+                this.isBase = !this.isBase;
+            }
+        })
     }
 
     // removes from list and DOM
