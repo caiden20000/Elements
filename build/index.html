@@ -1,45 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="coloris.min.css" />
     <link rel="stylesheet" href="style.css" />
     <script>var exports = {};</script>
+    <script src="coloris.min.js"></script>
     <title>Elements</title>
-    <style>
-html {
-    font-family: sans-serif;
-}
-
-.element {
-  font-family: sans-serif;
-  width: 75px;
-  height: 75px;
-  border: 2px solid black;
-  border-radius: 3px;
-  
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  flex-direction: vertical;
-  display: flex;
-  
-  user-select: none;
-  cursor: grab;
-  position: absolute;
-  
-  box-shadow: 2px 1px 1px #0005;
-}
-
-.base {
-  border-color: goldenrod;
-  box-shadow: none;
-}
-    </style>
 </head>
+
 <body>
     <div id="gamearea">
+
+        <div class="custom" id="custom-container" style="top: 10px; left: 100px;">
+            <button id="submit-custom">Submit</button>
+            <div class="element" id="custom-bit">
+                <input type="text" id="bit-name" />
+            </div>
+            <input type="text" data-coloris id="color-picker-1" class="color-picker">
+            <input type="text" data-coloris id="color-picker-2" class="color-picker">
+        </div>
+
     </div>
-    <script src="script.js"></script> 
+    <script>
+        Coloris({
+            theme: 'polaroid',
+            themeMode: 'dark',
+            alpha: false
+        });
+    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
