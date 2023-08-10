@@ -6,7 +6,8 @@ var bitList: Bit[] = [];
 
 // Object to keep track of dragging and key state.
 var userIn = {
-    shiftDown: false,
+    dragThreshold: 3,
+    dragging: false,
     mouse: {
         down: false,
         x: 0,
@@ -84,22 +85,16 @@ class Bit {
         this.element.classList.add("element");
         this.element.style.background = this.color;
         this.element.style.color = this.textColor;
+        if (this.isBase) this.element.classList.add("base");
         area.appendChild(this.element);
 
+        // Dragging on left click
+        // Deleting on right click
         this.element.addEventListener("mousedown", e => {
             if (e.button == 0) {
                 // Left mouse button
-                let targetBit: Bit;
-                // Copy when is "base" or holding shift
-                if (this.isBase || userIn.shiftDown) targetBit = this.spawnCopy();
-                else targetBit = this;
-                userIn.bit.element = targetBit.element;
-                userIn.bit.bit = targetBit;
-                let rect = targetBit.getRect()
-                userIn.bit.x = rect.left;
-                userIn.bit.y = rect.top;
-                // Make element TOP on z
-                targetBit.putOnTop();
+                userIn.bit.bit = this;
+                
             }
             else if (e.button == 2) {
                 // Right mouse button
@@ -109,6 +104,16 @@ class Bit {
                 }
             }
         });
+
+        // Pin/toggle isBase on double click
+        this.element.addEventListener("dblclick", e => {
+            console.log("dblclick")
+            if (e.button == 0) {
+                console.log("l")
+                // Left click toggles isBase
+                this.toggleBase();
+            }
+        })
     }
 
     // removes from list and DOM
@@ -125,6 +130,15 @@ class Bit {
         let index = bitList.indexOf(this);
         if (index > -1) bitList.splice(index, 1);
         bitList.push(this);
+    }
+
+    toggleBase() {
+        this.isBase = !this.isBase;
+        if (this.isBase) {
+            this.element.classList.add("base");
+        } else {
+            this.element.classList.remove("base");
+        }
     }
 }
 
@@ -215,14 +229,6 @@ function getPointsAbout(rects: DOMRect[], numberOfPoints: number): {top: number,
 }
 
 
-document.addEventListener("keydown", e => {
-    if (e.key == "Shift") userIn.shiftDown = true;
-});
-
-document.addEventListener("keyup", e => {
-    if (e.key == "Shift") userIn.shiftDown = false;
-});
-
 document.addEventListener("mousedown", e => {
     if (e.button == 0) {
         // Left mouse button
@@ -237,7 +243,10 @@ document.addEventListener("mouseup", e => {
     // to mirror gameArea child order
     if (e.button == 0) {
         // Left mouse button
-        if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
+        if (userIn.dragging) {
+            userIn.dragging = false;
+            if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
+        }
         userIn.mouse.down = false;
         userIn.bit.element = null;
         userIn.bit.bit = null;
@@ -247,10 +256,30 @@ document.addEventListener("mouseup", e => {
 });
 
 document.addEventListener("mousemove", e => {
-    if (userIn.mouse.down && userIn.bit.bit) {
+    if (userIn.mouse.down && userIn.bit.bit && userIn.dragging) {
         let dx = e.pageX - userIn.mouse.x;
         let dy = e.pageY - userIn.mouse.y;
         userIn.bit.bit.setPosition(userIn.bit.x + dx, userIn.bit.y + dy)
+    }
+    else if (userIn.mouse.down && userIn.dragging == false) {
+        const dx = Math.abs(e.pageX - userIn.mouse.x);
+        const dy = Math.abs(e.pageY - userIn.mouse.y);
+        if (dx >= userIn.dragThreshold || dy >= userIn.dragThreshold) {
+            userIn.dragging = true;
+            if (userIn.bit.bit == null) return;
+            let targetBit: Bit;
+            // Copy when is "base" or holding shift
+            if (userIn.bit.bit.isBase || e.shiftKey) targetBit = userIn.bit.bit.spawnCopy();
+            else targetBit = userIn.bit.bit;
+
+            userIn.bit.bit = targetBit;
+            userIn.bit.element = targetBit.element;
+            let rect = targetBit.getRect()
+            userIn.bit.x = rect.left;
+            userIn.bit.y = rect.top;
+            // Make element TOP on z
+            targetBit.putOnTop();
+        }
     }
 });
 
