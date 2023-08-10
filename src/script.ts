@@ -84,8 +84,11 @@ class Bit {
         this.element.classList.add("element");
         this.element.style.background = this.color;
         this.element.style.color = this.textColor;
+        if (this.isBase) this.element.classList.add("base");
         area.appendChild(this.element);
 
+        // Dragging on left click
+        // Deleting on right click
         this.element.addEventListener("mousedown", e => {
             if (e.button == 0) {
                 // Left mouse button
@@ -110,10 +113,13 @@ class Bit {
             }
         });
 
+        // Pin/toggle isBase on double click
         this.element.addEventListener("dblclick", e => {
+            console.log("dblclick")
             if (e.button == 0) {
+                console.log("l")
                 // Left click toggles isBase
-                this.isBase = !this.isBase;
+                this.toggleBase();
             }
         })
     }
@@ -132,6 +138,15 @@ class Bit {
         let index = bitList.indexOf(this);
         if (index > -1) bitList.splice(index, 1);
         bitList.push(this);
+    }
+
+    toggleBase() {
+        this.isBase = !this.isBase;
+        if (this.isBase) {
+            this.element.classList.add("base");
+        } else {
+            this.element.classList.remove("base");
+        }
     }
 }
 
