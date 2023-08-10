@@ -23,6 +23,14 @@ html {
     box-shadow: 2px 1px 1px #0005;
 }
 
+.grabbing {
+    cursor: grabbing;
+}
+
+.interaction {
+    cursor: cell;
+}
+
 .base {
     border-color: goldenrod;
     box-shadow: none;

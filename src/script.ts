@@ -150,6 +150,16 @@ class Bit {
             this.element.classList.remove("base");
         }
     }
+
+    setGrabbingCursor(enabled: boolean) {
+        if (enabled) this.element.classList.add("grabbing");
+        else this.element.classList.remove("grabbing");
+    }
+
+    setInteractionCursor(enabled: boolean) {
+        if (enabled) this.element.classList.add("interaction");
+        else this.element.classList.remove("interaction");
+    }
 }
 
 function getRectOverlap(rect1: DOMRect, rect2: DOMRect) {
@@ -273,6 +283,7 @@ document.addEventListener("mouseup", e => {
         // Left mouse button
         if (userIn.dragging) {
             userIn.dragging = false;
+            if (userIn.bit.bit) userIn.bit.bit.setGrabbingCursor(false);
             if (userIn.bit.bit != null) findOverlap(userIn.bit.bit);
         }
         userIn.mouse.down = false;
@@ -307,6 +318,7 @@ document.addEventListener("mousemove", e => {
             userIn.bit.y = rect.top;
             // Make element TOP on z
             targetBit.putOnTop();
+            targetBit.setGrabbingCursor(true);
         }
     }
 });
