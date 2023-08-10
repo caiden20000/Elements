@@ -1,0 +1,70 @@
+html {
+    font-family: sans-serif;
+}
+
+.element {
+    font-family: sans-serif;
+    width: 75px;
+    height: 75px;
+    border: 2px solid black;
+    border-radius: 3px;
+    font-size: 15px;
+
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+
+    user-select: none;
+    cursor: grab;
+    position: absolute;
+
+    box-shadow: 2px 1px 1px #0005;
+}
+
+.base {
+    border-color: goldenrod;
+    box-shadow: none;
+}
+
+.custom {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    width: 75px;
+    height: 120px;
+    position: absolute;
+    z-index: 1;
+}
+
+.custom .element {
+    position: static;
+    display: inline-block;
+}
+
+.custom button {
+    width: 75px;
+}
+
+#bit-name {
+    background: inherit;
+    width: 75px;
+    height: 75px;
+    text-align: center;
+
+    font-size: 15px;
+
+    margin: 0px;
+    padding: 0px;
+}
+
+.custom .color-picker {
+    width: 75px;
+    height: 15px;
+
+    margin: 0px;
+    padding: 0px;
+}
