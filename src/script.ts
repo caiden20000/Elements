@@ -22,6 +22,7 @@ var userIn = {
 }
 
 var customsEnabled = false;
+var aiEnabled = true;
 
 // List of every type of bit
 var possibleBits: BitTemplate[] = [];
@@ -230,6 +231,59 @@ function combineBits(bits: Bit[]) {
                 for (let bit of bits) if (!bit.isBase) bit.show();
             }
         });
+    } else if (aiEnabled) {
+        const midpoint = getMidpoint(rectList);
+        for (let bit of bits) if (!bit.isBase) bit.hide();
+        getGeneratedCombinationResult(bits.map(bit => bit.name), (bitResult: string) => {
+            if (bitResult == "Failure") {
+                for (let bit of bits) if (!bit.isBase) bit.show();
+            } else {
+
+                getGeneratedColorResult(bitResult, (colorResult: string) => {
+                    if (doesBitExist(bitResult) == false) {
+                        possibleBits.push({
+                            name: bitResult,
+                            color: colorResult,
+                            textColor: getDefaultTextColor(colorResult)
+                        });
+                    }
+                    const newBit = Bit.fromName(bitResult);
+                    newBit?.setPosition(midpoint.left, midpoint.top);
+                });
+
+                // Make the custom combo
+                combinations.push({
+                    ingredients: bits.map(bit => bit.name),
+                    results: [bitResult]
+                });
+                const points = getPointsAbout(rectList, results.length);
+                for (let bit of bits) if (!bit.isBase) bit.remove();
+                // Space out multiple combo results
+                for (let i = 0; i < results.length; i++) {
+                    results[i].setPosition(points[i].left, points[i].top);
+                }
+            }
+        });
+        // TODO
+    }
+}
+
+function hexToRGB(hexColor: string) {
+    if (hexColor.at(0) == '#') hexColor = hexColor.slice(1);
+    const r = parseInt(hexColor.slice(0, 2), 16);
+    const g = parseInt(hexColor.slice(2, 4), 16);
+    const b = parseInt(hexColor.slice(4, 6), 16);
+    return { r: r, g: g, b: b };
+}
+
+function getDefaultTextColor(hexColor: string) {
+    const rgb = hexToRGB(hexColor);
+    if ((rgb.r + rgb.g + rgb.b)/3 < 255/2) {
+        // hexColor is less than half bright
+        return "#FFFFFF";
+    } else {
+        // hexColor is more than half bright
+        return "#000000";
     }
 }
 
@@ -499,6 +553,33 @@ function exportJSON() {
     console.log(newFile);
 }
 
+///////
+// AI functionality
+/////////////
+
+function getGeneratedCombinationResult(bits: string[], callback: Function) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            callback(result);
+        }
+    };
+    xmlhttp.open("GET", "gencombo/" + bits.join("/"), false);
+    xmlhttp.send();
+}
+
+function getGeneratedColorResult(bit: string, callback: Function) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            callback(result);
+        }
+    };
+    xmlhttp.open("GET", "gencolor/" + bit, false);
+    xmlhttp.send();
+}
 
 // Driver code
 
