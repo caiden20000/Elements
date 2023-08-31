@@ -19,11 +19,15 @@ function setAPIKey(key: string) {
 }
 
 async function getCombinationResult(things: string[]): Promise<string> {
-  console.log(`Things: ${things}`);
   const systemPrompt = "This is a simple game. User will specify two or more objects or concepts, and you must return the most sensible result of that combination. For example, water + dirt = mud. Only respond with the result.";
   let userPrompt = things.join(" + ") + " = ";
-  const response = await systemUserRequest(systemPrompt, userPrompt);
-  console.log(`Response: ${response}`);
+  let response: string | undefined;
+  do {
+    response = await systemUserRequest(systemPrompt, userPrompt);
+  } while (response?.includes("+") || response?.includes("="));
+  // Trim trailing periods
+  response = response?.trim();
+  if (response?.endsWith(".")) response = response.slice(0, -1);
   return response ?? "Failure";
 }
 

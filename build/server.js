@@ -30,11 +30,16 @@ function setAPIKey(key) {
 }
 function getCombinationResult(things) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`Things: ${things}`);
         const systemPrompt = "This is a simple game. User will specify two or more objects or concepts, and you must return the most sensible result of that combination. For example, water + dirt = mud. Only respond with the result.";
         let userPrompt = things.join(" + ") + " = ";
-        const response = yield systemUserRequest(systemPrompt, userPrompt);
-        console.log(`Response: ${response}`);
+        let response;
+        do {
+            response = yield systemUserRequest(systemPrompt, userPrompt);
+        } while ((response === null || response === void 0 ? void 0 : response.includes("+")) || (response === null || response === void 0 ? void 0 : response.includes("=")));
+        // Trim trailing periods
+        response = response === null || response === void 0 ? void 0 : response.trim();
+        if (response === null || response === void 0 ? void 0 : response.endsWith("."))
+            response = response.slice(0, -1);
         return response !== null && response !== void 0 ? response : "Failure";
     });
 }
