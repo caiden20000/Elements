@@ -1,148 +1,607 @@
 {
-    "baseBits": [
+  "baseBits": [
+    "Air",
+    "Earth",
+    "Fire",
+    "Water"
+  ],
+  "bits": [
+    {
+      "name": "Air",
+      "color": "#aabbff",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Earth",
+      "color": "#883322",
+      "textColor": "#ffffff"
+    },
+    {
+      "name": "Fire",
+      "color": "#ff5544",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Water",
+      "color": "#4444ff",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Cloud",
+      "color": "#dddddd",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Dust",
+      "color": "#e0e1a9",
+      "textColor": "#4a4a4a"
+    },
+    {
+      "name": "Steam",
+      "color": "#d3e0e1",
+      "textColor": "#01596f"
+    },
+    {
+      "name": "Lava",
+      "color": "#d70000",
+      "textColor": "#ecb487"
+    },
+    {
+      "name": "Land",
+      "color": "#3add42",
+      "textColor": "#573333"
+    },
+    {
+      "name": "Embers",
+      "color": "#e6c5b3",
+      "textColor": "#ff6a00"
+    },
+    {
+      "name": "Sand",
+      "color": "#fffda4",
+      "textColor": "#333333"
+    },
+    {
+      "name": "Continent",
+      "color": "#38ec62",
+      "textColor": "#343f8e"
+    },
+    {
+      "name": "Gunpowder",
+      "color": "#373737",
+      "textColor": "#dcdfc4"
+    },
+    {
+      "name": "Glass",
+      "color": "#f9f7f7",
+      "textColor": "#b0bbe8"
+    },
+    {
+      "name": "Condensation",
+      "color": "#a4cde1",
+      "textColor": "#ffffff"
+    },
+    {
+      "name": "Volcano",
+      "color": "#754629",
+      "textColor": "#ff6637"
+    },
+    {
+      "name": "Rock",
+      "color": "#9b9b9b",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Sea",
+      "color": "#2960df",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Ocean",
+      "color": "#334eea",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Island",
+      "color": "#1ae646",
+      "textColor": "#77733a"
+    },
+    {
+      "name": "Planet Earth",
+      "color": "#1d46d9",
+      "textColor": "#1ffd26"
+    },
+    {
+      "name": "Smoke",
+      "color": "#606060",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Soot",
+      "color": "#000000",
+      "textColor": "#888888"
+    },
+    {
+      "name": "Carbon",
+      "color": "#000000",
+      "textColor": "#8c8c8c"
+    },
+    {
+      "name": "Wind",
+      "color": "#ececec",
+      "textColor": "#868686"
+    },
+    {
+      "name": "Rain",
+      "color": "#868686",
+      "textColor": "#8066ff"
+    },
+    {
+      "name": "Big Rock",
+      "color": "#AAAAAA",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Mountain",
+      "color": "#8c8c8c",
+      "textColor": "#000000"
+    },
+    {
+      "name": "Storm",
+      "color": "#575757",
+      "textColor": "#4f66d9"
+    }
+  ],
+  "combinations": [
+    {
+      "ingredients": [
         "Air",
-        "Earth",
+        "Water"
+      ],
+      "results": [
+        "Cloud"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Earth"
+      ],
+      "results": [
+        "Dust"
+      ]
+    },
+    {
+      "ingredients": [
         "Fire",
         "Water"
-    ],
-    "bits": [
-        {
-            "name": "Air",
-            "color": "#aabbff",
-            "textColor": "#000000"
-        },
-        {
-            "name": "Earth",
-            "color": "#883322",
-            "textColor": "#ffffff"
-        },
-        {
-            "name": "Fire",
-            "color": "#ff5544",
-            "textColor": "#000000"
-        },
-        {
-            "name": "Water",
-            "color": "#4444ff",
-            "textColor": "#000000"
-        },
-        {
-            "name": "Cloud",
-            "color": "#dddddd",
-            "textColor": "#000000"
-        },
-        {
-            "name": "Dust",
-            "color": "#e0e1a9",
-            "textColor": "#4a4a4a"
-        },
-        {
-            "name": "Steam",
-            "color": "#d3e0e1",
-            "textColor": "#01596f"
-        },
-        {
-            "name": "Lava",
-            "color": "#d70000",
-            "textColor": "#ecb487"
-        },
-        {
-            "name": "Land",
-            "color": "#3add42",
-            "textColor": "#573333"
-        },
-        {
-            "name": "Embers",
-            "color": "#e6c5b3",
-            "textColor": "#ff6a00"
-        },
-        {
-            "name": "Sand",
-            "color": "#fffda4",
-            "textColor": "#333333"
-        }
-    ],
-    "combinations": [
-        {
-            "ingredients": [
-                "Air",
-                "Water"
-            ],
-            "results": [
-                "Cloud"
-            ]
-        },
-        {
-            "ingredients": [
-                "Air",
-                "Earth"
-            ],
-            "results": [
-                "Dust"
-            ]
-        },
-        {
-            "ingredients": [
-                "Fire",
-                "Water"
-            ],
-            "results": [
-                "Steam"
-            ]
-        },
-        {
-            "ingredients": [
-                "Earth",
-                "Fire"
-            ],
-            "results": [
-                "Lava"
-            ]
-        },
-        {
-            "ingredients": [
-                "Earth",
-                "Earth"
-            ],
-            "results": [
-                "Land"
-            ]
-        },
-        {
-            "ingredients": [
-                "Air",
-                "Fire"
-            ],
-            "results": [
-                "Embers"
-            ]
-        },
-        {
-            "ingredients": [
-                "Embers",
-                "Embers"
-            ],
-            "results": [
-                "Fire"
-            ]
-        },
-        {
-            "ingredients": [
-                "Earth",
-                "Water"
-            ],
-            "results": [
-                "Sand"
-            ]
-        },
-        {
-            "ingredients": [
-                "Dust",
-                "Dust"
-            ],
-            "results": [
-                "Sand"
-            ]
-        }
-    ]
+      ],
+      "results": [
+        "Steam"
+      ]
+    },
+    {
+      "ingredients": [
+        "Earth",
+        "Fire"
+      ],
+      "results": [
+        "Lava"
+      ]
+    },
+    {
+      "ingredients": [
+        "Earth",
+        "Earth"
+      ],
+      "results": [
+        "Land"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Fire"
+      ],
+      "results": [
+        "Embers"
+      ]
+    },
+    {
+      "ingredients": [
+        "Embers",
+        "Embers"
+      ],
+      "results": [
+        "Fire"
+      ]
+    },
+    {
+      "ingredients": [
+        "Earth",
+        "Water"
+      ],
+      "results": [
+        "Sand"
+      ]
+    },
+    {
+      "ingredients": [
+        "Dust",
+        "Dust"
+      ],
+      "results": [
+        "Sand"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Dust"
+      ],
+      "results": [
+        "Dust"
+      ]
+    },
+    {
+      "ingredients": [
+        "Dust",
+        "Earth"
+      ],
+      "results": [
+        "Earth"
+      ]
+    },
+    {
+      "ingredients": [
+        "Earth",
+        "Land"
+      ],
+      "results": [
+        "Land"
+      ]
+    },
+    {
+      "ingredients": [
+        "Land",
+        "Land"
+      ],
+      "results": [
+        "Continent"
+      ]
+    },
+    {
+      "ingredients": [
+        "Dust",
+        "Fire"
+      ],
+      "results": [
+        "Gunpowder"
+      ]
+    },
+    {
+      "ingredients": [
+        "Fire",
+        "Sand"
+      ],
+      "results": [
+        "Glass"
+      ]
+    },
+    {
+      "ingredients": [
+        "Glass",
+        "Steam"
+      ],
+      "results": [
+        "Condensation"
+      ]
+    },
+    {
+      "ingredients": [
+        "Condensation",
+        "Condensation"
+      ],
+      "results": [
+        "Water"
+      ]
+    },
+    {
+      "ingredients": [
+        "Earth",
+        "Lava"
+      ],
+      "results": [
+        "Volcano"
+      ]
+    },
+    {
+      "ingredients": [
+        "Volcano",
+        "Water"
+      ],
+      "results": [
+        "Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Water",
+        "Water"
+      ],
+      "results": [
+        "Sea"
+      ]
+    },
+    {
+      "ingredients": [
+        "Sea",
+        "Sea"
+      ],
+      "results": [
+        "Ocean"
+      ]
+    },
+    {
+      "ingredients": [
+        "Sea",
+        "Water"
+      ],
+      "results": [
+        "Ocean"
+      ]
+    },
+    {
+      "ingredients": [
+        "Ocean",
+        "Ocean"
+      ],
+      "results": [
+        "Ocean"
+      ]
+    },
+    {
+      "ingredients": [
+        "Ocean",
+        "Water"
+      ],
+      "results": [
+        "Ocean"
+      ]
+    },
+    {
+      "ingredients": [
+        "Ocean",
+        "Volcano"
+      ],
+      "results": [
+        "Island"
+      ]
+    },
+    {
+      "ingredients": [
+        "Island",
+        "Island"
+      ],
+      "results": [
+        "Continent"
+      ]
+    },
+    {
+      "ingredients": [
+        "Continent",
+        "Ocean"
+      ],
+      "results": [
+        "Planet Earth"
+      ]
+    },
+    {
+      "ingredients": [
+        "Fire",
+        "Steam"
+      ],
+      "results": [
+        "Steam"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Embers"
+      ],
+      "results": [
+        "Smoke"
+      ]
+    },
+    {
+      "ingredients": [
+        "Fire",
+        "Fire"
+      ],
+      "results": [
+        "Fire"
+      ]
+    },
+    {
+      "ingredients": [
+        "Glass",
+        "Smoke"
+      ],
+      "results": [
+        "Soot"
+      ]
+    },
+    {
+      "ingredients": [
+        "Smoke",
+        "Smoke"
+      ],
+      "results": [
+        "Soot"
+      ]
+    },
+    {
+      "ingredients": [
+        "Soot",
+        "Soot"
+      ],
+      "results": [
+        "Carbon"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Air"
+      ],
+      "results": [
+        "Wind"
+      ]
+    },
+    {
+      "ingredients": [
+        "Cloud",
+        "Cloud"
+      ],
+      "results": [
+        "Rain"
+      ]
+    },
+    {
+      "ingredients": [
+        "Cloud",
+        "Rain"
+      ],
+      "results": [
+        "Rain"
+      ]
+    },
+    {
+      "ingredients": [
+        "Lava",
+        "Rain"
+      ],
+      "results": [
+        "Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Lava",
+        "Water"
+      ],
+      "results": [
+        "Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Fire",
+        "Rock"
+      ],
+      "results": [
+        "Lava"
+      ]
+    },
+    {
+      "ingredients": [
+        "Rock",
+        "Rock"
+      ],
+      "results": [
+        "Big Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Big Rock",
+        "Fire"
+      ],
+      "results": [
+        "Lava"
+      ]
+    },
+    {
+      "ingredients": [
+        "Big Rock",
+        "Rock"
+      ],
+      "results": [
+        "Big Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Big Rock",
+        "Big Rock"
+      ],
+      "results": [
+        "Mountain"
+      ]
+    },
+    {
+      "ingredients": [
+        "Fire",
+        "Mountain"
+      ],
+      "results": [
+        "Volcano"
+      ]
+    },
+    {
+      "ingredients": [
+        "Lava",
+        "Mountain"
+      ],
+      "results": [
+        "Volcano"
+      ]
+    },
+    {
+      "ingredients": [
+        "Water",
+        "Wind"
+      ],
+      "results": [
+        "Storm"
+      ]
+    },
+    {
+      "ingredients": [
+        "Rain",
+        "Rain"
+      ],
+      "results": [
+        "Storm"
+      ]
+    },
+    {
+      "ingredients": [
+        "Storm",
+        "Storm"
+      ],
+      "results": [
+        "Water"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Lava"
+      ],
+      "results": [
+        "Rock"
+      ]
+    },
+    {
+      "ingredients": [
+        "Air",
+        "Steam"
+      ],
+      "results": [
+        "Cloud"
+      ]
+    }
+  ]
 }
