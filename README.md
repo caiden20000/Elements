@@ -19,6 +19,8 @@ Customs Mode:
 - You can paste that object into `loadFromJSON(json)` to replace the recipes in the current session, though it won't delete anything on screen before applying, so new default elements will be placed on top of the old ones if present.
 - When running your own instance of the code, put your custom JSON object into 'bits.json' to load it upon page open.
 
+The JSON format, as well as the code, supports combining 2+ elements, as well as having 1+ resulting elements. It is a (current) limitation of the customs mode that you can't make more than 1 resultant element with the UI. It is also the result of the drag + drop style that you cannot currently create a 3+ element recipe, despite it being supported by all other parts of the code. Feel free to fork the repo and engage with that functionality yourself!
+
 ### TODO:
 - Brainthink a way that 3+ elements could be combined (optional).
 - Add a GPT version that generates the combination results on-the-fly.
